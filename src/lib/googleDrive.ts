@@ -30,6 +30,30 @@ export interface UploadResult {
   message?: string;
 }
 
+// Mock implementation of finding or creating a case folder
+export const findOrCreateCaseFolder = async (
+  parentFolderId: string,
+  caseNumber: string
+): Promise<{ folderId: string; folderLink: string }> => {
+  console.log(`Finding or creating folder for case ${caseNumber} in ${parentFolderId}`);
+  
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // In a real implementation, this would:
+  // 1. Check if folder with name caseNumber exists in parentFolderId
+  // 2. If it exists, return its ID
+  // 3. If not, create a new folder and return its ID
+  
+  // For simulation, we'll generate a mock case folder ID based on parent ID and case number
+  const caseFolderId = `${parentFolderId}-case-${caseNumber}`;
+  
+  // Generate a folder link to the specific case folder
+  const folderLink = `https://drive.google.com/drive/folders/${caseFolderId}?usp=sharing`;
+  
+  return { folderId: caseFolderId, folderLink };
+};
+
 // This is a mock implementation for demo purposes.
 // In a real implementation, you would use the Google Drive API JS client.
 export const uploadFilesToGoogleDrive = async (
@@ -55,9 +79,9 @@ export const uploadFilesToGoogleDrive = async (
   progressCallback([...fileStatuses]);
   
   try {
-    // Simulate checking if case folder exists
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log(`Checking if case folder exists for case: ${caseNumber}`);
+    // Find or create case folder
+    const { folderId: caseFolderId, folderLink } = await findOrCreateCaseFolder(locationFolderId, caseNumber);
+    console.log(`Case folder ID: ${caseFolderId} with link: ${folderLink}`);
     
     // Update statuses to uploading
     fileStatuses.forEach(status => {
@@ -65,12 +89,12 @@ export const uploadFilesToGoogleDrive = async (
     });
     progressCallback([...fileStatuses]);
     
-    // Simulate uploading files one by one
+    // Simulate uploading files one by one to the case folder
     for (let i = 0; i < fileStatuses.length; i++) {
       const file = files[i];
       const status = fileStatuses[i];
       
-      console.log(`Uploading file: ${file.name}`);
+      console.log(`Uploading file: ${file.name} to case folder: ${caseFolderId}`);
       
       // Simulate progress updates
       for (let progress = 0; progress <= 100; progress += 10) {
@@ -82,9 +106,6 @@ export const uploadFilesToGoogleDrive = async (
       status.status = 'success';
       progressCallback([...fileStatuses]);
     }
-    
-    // In a real implementation, this would be the actual folder link
-    const folderLink = `https://drive.google.com/drive/folders/${locationFolderId}?usp=sharing`;
     
     return {
       success: true,
@@ -109,20 +130,4 @@ export const uploadFilesToGoogleDrive = async (
       message: `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     };
   }
-};
-
-// This function would actually be implemented to use the Google Drive API
-// to create a folder if it doesn't exist, or find an existing one
-export const findOrCreateCaseFolder = async (
-  parentFolderId: string,
-  caseNumber: string
-): Promise<string> => {
-  // This is a mock implementation that just returns the parent folder ID
-  console.log(`Finding or creating folder for case ${caseNumber} in ${parentFolderId}`);
-  
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // In a real implementation, this would return the ID of a new or existing folder
-  return parentFolderId;
 };

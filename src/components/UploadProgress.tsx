@@ -66,13 +66,10 @@ const UploadProgress: React.FC<UploadProgressProps> = ({ files }) => {
                   "h-1.5",
                   file.status === 'success' && "bg-green-100",
                   file.status === 'error' && "bg-red-100",
-                  (file.status === 'uploading' || file.status === 'pending') && "bg-gray-100"
-                )}
-                indicatorClassName={cn(
-                  file.status === 'success' && "bg-green-500",
-                  file.status === 'error' && "bg-red-500",
-                  file.status === 'uploading' && "bg-blue-500 animate-pulse-gentle",
-                  file.status === 'pending' && "bg-gray-300"
+                  (file.status === 'uploading' || file.status === 'pending') && "bg-gray-100",
+                  file.status === 'success' ? "text-green-500" : 
+                  file.status === 'error' ? "text-red-500" : 
+                  file.status === 'uploading' ? "text-blue-500" : "text-gray-300"
                 )}
               />
               
